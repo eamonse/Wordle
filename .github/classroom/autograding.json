@@ -1,0 +1,74 @@
+{
+  "tests": [
+    {
+      "name": "Test word_length",
+      "setup": "",
+      "run": "python -m unittest tests.word_list_tests.WordListTestCases.test_word_length",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Test random_valid_word",
+      "setup": "",
+      "run": "python -m unittest tests.word_list_tests.WordListTestCases.test_random_valid_word",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Test Letter State",
+      "setup": "",
+      "run": "python -m unittest tests.wordle_game_tests.WordleCases.test_letter_state",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Test Repeated Letters",
+      "setup": "",
+      "run": "python -m unittest tests.wordle_game_tests.WordleCases.test_multiple_letter",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Test Win",
+      "setup": "",
+      "run": "python -m unittest tests.wordle_game_tests.WordleCases.test_win",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Test Not Word",
+      "setup": "",
+      "run": "python -m unittest tests.wordle_game_tests.WordleCases.test_not_word",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Test Lose",
+      "setup": "",
+      "run": "python -m unittest tests.wordle_game_tests.WordleCases.test_lose",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    }
+  ]
+}
