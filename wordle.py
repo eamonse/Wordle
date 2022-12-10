@@ -210,7 +210,7 @@ class WordleGame:
         self.start_list = WordList()
         self.test_word = ""
         self.current_word =""
-        
+        self.user_guess = ""
         
     # has_more_guesses
     # *****************
@@ -251,74 +251,87 @@ class WordleGame:
     # Return: GuessResult: object that contains the results of the current guess
     """ <method for submit_guess_and_get_result> """
     def submit_guess_and_get_result(self, guess:str) ->GuessResult:
-        self.guess = guess
-        g = GuessResult(self.guess, MAX_GUESSES-self.total_guesses)
-        #GuessResult object initialized, and WordList is the self.start_list since that started the game
+        g = GuessResult(guess, MAX_GUESSES-self.total_guesses)
+        print(g.user_guess)
+        list = WordList()
+        list.set_active_word_length(self.length)
+        g.letter_state = []
         # code go brrrrr imagine not doing your homework - Chris Lynn
+        #attempt 2
         
-        #case of if the guess isn't valid
-        if self.start_list.is_valid_word(self.guess) == False:
-            g = GuessState.INVALID_WORD
-            #if its not a valid word, change the guessstate of it and return the guessresult
+        
+        if list.is_valid_word(guess) == False:
+            g.state = GuessState.INVALID_WORD
             return g
-            #letter state wouldn't matter, or maybe i'll have to set it to all grey
-        self.total_guesses+=1
-        #each time the code runs that should be adding on a guess, but it shouldn't include invalid words
+        #word is real, now start the guessing process (cant charge a guess for invalid word)
+        
 
-        #if it gets to here, then the guess if a valid word
-        #what should be done to determine that the guess is correct
-        if self.total_guesses <= MAX_GUESSES:
-            #as long as all the guesses arent used, check the word
-            if self.guess == self.test_word:
-                g = GuessState.YOU_WON
+
+        
+
+        g.turns_remaining -= 1
+        #as long as there are turns remaining
+        if (g.turns_remaining > 1):
+            #correct word letter state and state assigner
+            if (guess == self.test_word):
+                g.state = GuessState.YOU_WON
+                for x in range(len(guess)):
+                    g.letter_state.append(LetterState.MATCH_PLACE)
                 return g
-                #might set the entire letter state to correct (MATCH_PLACE)
 
-        #you only lose in one case, when all guesses are used and the word isnt a the final word
-        #if it gets to here, that means the guess was confirmed to not be correct.
-        if self.total_guesses == MAX_GUESSES:
-            if self.guess != self.test_word:
-                g = GuessState.YOU_LOST
+
+            #incorrect word and corresponding letter state assigner
+            c = 0
+            for x in guess:
+                b = 0
+                for y in self.test_word:
+                    #x and y are the individual characters of guess and testword which should have the same length
+                    if x == y and c < b:
+                        #c and b are counters, and b should be greater than c in this case
+                        #this is like an index checker without relying on the actual index bs that arrives with it
+                        #the > is there because you dont want to reassign for letters that got the letterstate already
+                        g.letter_state.append(LetterState.MATCH_LETTER) 
+                        b+=1   
+                        break
+                        #exit this for first loop which would check for the next letter
+                    elif x == y and c == b:
+                        #same letter, at the correct position
+                        g.letter_state.append(LetterState.MATCH_PLACE)
+                        b+=1
+                        break
+                    else:
+                        g.letter_state.append(LetterState.NOT_FOUND)
+                        b+=1
+                        break
+                c +=1
+         #in the case of no more turns remaining
+        elif (g.turns_remaining == 1):
+            if (guess == self.test_word):
+                g.state = GuessState.YOU_WON
+                for x in range(len(guess)):
+                    g.letter_state.append(LetterState.MATCH_PLACE)
                 return g
-                #if a letterstate is needed then i can move the code below to above this
-
-        #if it gets past that, it means that not all guesses were used but the guess was incorrect
-
-        #check for any Greens
-        for x in range(len(self.guess)):
-            if self.current_word[x] == self.guess[x]:
-                #if the letter is in the same spot then all is great slap a green on that letter state
-                g.letter_state.append(LetterState.MATCH_PLACE)
-        #check for RESET, if the letter isnt in the word at all
-        for x in range(len(self.guess)):
-            letter_in_word = False
-            for y in range(len(self.guess)):
-                if self.current_word[x] == self.guess[y] and self.current_word[x] != self.guess[x]:
-                    letter_in_word = True
-            if letter_in_word == False:
-                #in the case that the letter is not in the word, it needs to be greyed out w the reset color
-                g.letter_state.append(LetterState.NOT_FOUND)
-            else:
-                #if the code reaches this point, the letter is in the word but the letter is not in the same place (to not overlap with the green )
-                g.letter_state.append(LetterState.MATCH_LETTER)
-        #The loop gets the letter state situation for the guess sorted out, but what use is that
-
-        #Well the case im looking for is that the guess was incorrect, but that they still have a change to guess again
-        #the letter state helps determine which letters were in the correct spot or at least in the word
-        #now the code for the submit guess should return that along with the GuessState GUESS_AGAIN
-
-        # the code already determined the letter state for the GuessResult, so its what i should do with that info now
-        #theres already a method that deals with that in GuessResult, get_guess_string (returns a string)
-        print(g.get_guess_string())
-        #that'll print out a string of the characters that should be color coded
-        #but whats the use of that
-
-        #in the GuessResult by this point, letter state is taken care of. state will be determined when i drop the GUESS_AGAIN
-        #that leaves current_word to be set to the correct word, but should be done earlier
-        #theres nothing other than that i think
-        if self.total_guesses < MAX_GUESSES:
-            #as long as all the guesses arent used, check the word
-            g = GuessState.GUESS_AGAIN
-            return g
-
-
+            if (guess != self.test_word):
+                g.state = GuessState.YOU_LOST
+            c = 0
+            for x in guess:
+                b = 0
+                for y in self.test_word:
+                    if x == y and c < b:
+                        g.letter_state.append(LetterState.MATCH_LETTER) 
+                        b+=1   
+                        break
+                    elif x == y and c == b:
+                        g.letter_state.append(LetterState.MATCH_PLACE)
+                        b+=1
+                        break
+                    else:
+                        g.letter_state.append(LetterState.NOT_FOUND)
+                        b+=1
+                        break
+                c +=1
+                #i could've shortened the code by making the letter state scanner a helper function
+                #this has to be called when you lose (to determing the letter state) as well as during the 
+                #normal guesses so i just copied and pasted for my ease
+                return g
+        
