@@ -58,7 +58,7 @@ class GuessResult:
         self.turns_remaining = turns_remaining
         self.state = GuessState.UNKNOWN
         self.letter_state = []
-        self.current_word = None
+        self.current_word = ""
     # get_state_string
     # ******************
     # Gets a string explaining the game state after the current guess
@@ -77,7 +77,7 @@ class GuessResult:
         elif self.state == GuessState.YOU_WON:
             return "You Won!!"
         elif self.state == GuessState.YOU_LOST:
-            return "You lost. Word was " + self.current_word
+            return "You lost.  Word was " + self.current_word
         elif self.state == GuessState.INVALID_WORD or self.state == GuessState.UNKNOWN:
             return "Not a word, try again."
     # get_guess_string
@@ -204,14 +204,12 @@ class WordleGame:
     # Initialize your choice of attributes needed for your logic
     """ <Constructor for WordleGame> """
     def __init__(self):
-        #gotta determine how many guess to give them
         self.total_guesses = 0
         self.length = 5
         self.start_list = WordList()
         self.test_word = ""
         self.current_word =""
-        self.user_guess = ""
-        
+        self.guess = ""
     # has_more_guesses
     # *****************
     # Checks to see if you can continue to guess words
@@ -251,8 +249,8 @@ class WordleGame:
     # Return: GuessResult: object that contains the results of the current guess
     """ <method for submit_guess_and_get_result> """
     def submit_guess_and_get_result(self, guess:str) ->GuessResult:
-        g = GuessResult(guess, MAX_GUESSES-self.total_guesses)
-        print(g.user_guess)
+        self.guess = guess
+        g = GuessResult(self.guess, MAX_GUESSES-self.total_guesses)
         list = WordList()
         list.set_active_word_length(self.length)
         g.letter_state = []
@@ -260,7 +258,7 @@ class WordleGame:
         #attempt 2
         
         
-        if list.is_valid_word(guess) == False:
+        if list.is_valid_word(self.guess) == False:
             g.state = GuessState.INVALID_WORD
             return g
         #word is real, now start the guessing process (cant charge a guess for invalid word)
@@ -270,19 +268,20 @@ class WordleGame:
         
 
         g.turns_remaining -= 1
+        self.total_guesses +=1
         #as long as there are turns remaining
-        if (g.turns_remaining > 1):
+        if (g.turns_remaining >= 1):
             #correct word letter state and state assigner
-            if (guess == self.test_word):
+            if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
-                for x in range(len(guess)):
+                for x in range(len(self.guess)):
                     g.letter_state.append(LetterState.MATCH_PLACE)
                 return g
 
 
             #incorrect word and corresponding letter state assigner
             c = 0
-            for x in guess:
+            for x in self.guess:
                 b = 0
                 for y in self.test_word:
                     #x and y are the individual characters of guess and testword which should have the same length
@@ -304,34 +303,36 @@ class WordleGame:
                         b+=1
                         break
                 c +=1
+            g.state = GuessState.GUESS_AGAIN
          #in the case of no more turns remaining
-        elif (g.turns_remaining == 1):
-            if (guess == self.test_word):
+        elif (g.turns_remaining == 0):
+            if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
-                for x in range(len(guess)):
+                for x in range(len(self.guess)):
                     g.letter_state.append(LetterState.MATCH_PLACE)
                 return g
-            if (guess != self.test_word):
+            else:
                 g.state = GuessState.YOU_LOST
-            c = 0
-            for x in guess:
-                b = 0
-                for y in self.test_word:
-                    if x == y and c < b:
-                        g.letter_state.append(LetterState.MATCH_LETTER) 
-                        b+=1   
-                        break
-                    elif x == y and c == b:
-                        g.letter_state.append(LetterState.MATCH_PLACE)
-                        b+=1
-                        break
-                    else:
-                        g.letter_state.append(LetterState.NOT_FOUND)
-                        b+=1
-                        break
-                c +=1
-                #i could've shortened the code by making the letter state scanner a helper function
-                #this has to be called when you lose (to determing the letter state) as well as during the 
-                #normal guesses so i just copied and pasted for my ease
-                return g
+                c = 0
+                for x in self.guess:
+                    b = 0
+                    for y in self.test_word:
+                        if x == y and c < b:
+                            g.letter_state.append(LetterState.MATCH_LETTER) 
+                            b+=1   
+                            break
+                        elif x == y and c == b:
+                            g.letter_state.append(LetterState.MATCH_PLACE)
+                            b+=1
+                            break
+                        else:
+                            g.letter_state.append(LetterState.NOT_FOUND)
+                            b+=1
+                            break
+                    c +=1
+                    #i could've shortened the code by making the letter state scanner a helper function
+                    #this has to be called when you lose (to determing the letter state) as well as during the 
+                    #normal guesses so i just copied and pasted for my ease
+                    return g
+        return g
         
