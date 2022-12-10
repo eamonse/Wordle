@@ -30,7 +30,6 @@ class TextColor:
 # handle running the game so that you can test out your functionality.
 # ********************
 
-
 # Class: GuessResult
 # *************************
 # An object that gets passed to the user (e.g. wordle_runner) about how a guess
@@ -60,7 +59,6 @@ class GuessResult:
         self.state = GuessState.UNKNOWN
         self.letter_state = []
         self.current_word = None
-
     # get_state_string
     # ******************
     # Gets a string explaining the game state after the current guess
@@ -72,7 +70,7 @@ class GuessResult:
     #   YOU_LOST: "You lost.  Word was <THE WORD>"
     #   INVALID or UNKNOWN: "Not a word, try again."
     """ <method for get_state_string> """
-   def get_state_string(self):
+    def get_state_string(self):
         #very straight forward, check the state for the specific GuessState and give the appropiate return val
         if self.state == GuessState.GUESS_AGAIN:
             return self.turns_remaining + " turns left"
@@ -82,8 +80,6 @@ class GuessResult:
             return "You lost. Word was " + self.current_word
         elif self.state == GuessState.INVALID_WORD or self.state == GuessState.UNKNOWN:
             return "Not a word, try again."
- 
-
     # get_guess_string
     # *******************
     # Returns a string that has each letter of the guess color coded. If the guess
@@ -118,7 +114,10 @@ class GuessResult:
         #        #if the code reaches this point, the letter is in the word but the letter is not in the same place (to not overlap with the green )
         #       return
         
-        #I thought I had to manually code it but this was useful for later
+        #This ^ is going to remain here as my mark of shame I didn't realize that it was specifically for LetterState
+        #I thought I had to manually code it this was embarassing.
+
+        #actually that was rather useful i needed that later
 
         char_str = ""
         index = 0
@@ -131,7 +130,6 @@ class GuessResult:
                 char_str = char_str +TextColor.RESET + self.user_guess[index] + TextColor.RESET
             index = index + 1
         return char_str
-
 
 # class WordList
 # ******************
@@ -151,7 +149,6 @@ class WordList:
         # init other attributes here
         self._active_words = []
         self._word_length = 0
-
 
     # set_active_word_length
     # ************************
@@ -186,7 +183,6 @@ class WordList:
             if x == word:
                 return True
         return False
-
     # pick_random_word
     # ******************
     # Picks a random word of the current active word length
@@ -196,7 +192,6 @@ class WordList:
     """ <method for pick_random_word> """
     def pick_random_word(self) -> str:
         return random.choice(self._active_words)
-
 
 MAX_GUESSES = 5
 
@@ -215,7 +210,8 @@ class WordleGame:
         self.start_list = WordList()
         self.test_word = ""
         self.current_word =""
-
+        
+        
     # has_more_guesses
     # *****************
     # Checks to see if you can continue to guess words
@@ -227,7 +223,6 @@ class WordleGame:
     def has_more_guesses(self) -> bool:
         #total guesses is going to be changing per submitted guess
         return self.total_guesses == MAX_GUESSES
-
     # start_new_game
     # *****************
     # Starts a new game of Wordle using words of the given length
@@ -244,7 +239,7 @@ class WordleGame:
         self.start_list.set_active_word_length(self.length)
         self.test_word = test_word
 
-    # submit_guess_and_get_result   
+    # submit_guess_and_get_result
     # *****************
     # Creates a GuessResult object with the user's guess and how it did against
     # the target word. This method is responsible for setting the values
