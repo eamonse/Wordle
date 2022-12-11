@@ -53,7 +53,7 @@ class GuessResult:
     #   letter_state: List[LetterState]: LetterState of each letter in the current guess (default: empty list)
     #   current_word: str: set this to None until the user has lost the game to not give it away
     """ <write constructor for GuessResult here>"""
-    def __init__(self, user_guess: str, turns_remaining: int):
+    def __init__(self, user_guess: str, turns_remaining: int) -> None:
         self.user_guess = user_guess
         self.turns_remaining = turns_remaining
         self.state = GuessState.UNKNOWN
@@ -206,6 +206,7 @@ class WordleGame:
     def __init__(self):
         self.total_guesses = 0
         self.length = 5
+        #default value for word length at the start of the game
         self.start_list = WordList()
         self.test_word = ""
         self.current_word =""
@@ -271,7 +272,7 @@ class WordleGame:
         #as long as there are turns remaining
         self.total_guesses +=1
 
-        if (self.total_guesses < 5):
+        if (self.total_guesses < MAX_GUESSES):
             #correct word letter state and state assigner
             if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
@@ -283,7 +284,7 @@ class WordleGame:
 
             #incorrect word and corresponding letter state assigner
             c = 0
-            a = len(self.guess)
+            #a = len(self.guess)
             for x in self.guess:
                 b = 0
                 
@@ -316,9 +317,9 @@ class WordleGame:
                     g.letter_state.append(LetterState.NOT_FOUND)
                 c +=1
             g.state = GuessState.GUESS_AGAIN
-         #in the case of no more turns remaining
-        
-        if (self.total_guesses == 5):
+         
+        #in the case of no more turns remaining
+        if (self.total_guesses == MAX_GUESSES):
             if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
                 for x in range(len(self.guess)):
