@@ -73,11 +73,11 @@ class GuessResult:
     def get_state_string(self):
         #very straight forward, check the state for the specific GuessState and give the appropiate return val
         if self.state == GuessState.GUESS_AGAIN:
-            return self.turns_remaining + " turns left"
+            return str(self.turns_remaining) + " turns left"
         elif self.state == GuessState.YOU_WON:
             return "You Won!!"
         elif self.state == GuessState.YOU_LOST:
-            return "You lost.  Word was " + self.current_word
+            return "You lost.  Word was " + str(self.current_word)
         elif self.state == GuessState.INVALID_WORD or self.state == GuessState.UNKNOWN:
             return "Not a word, try again."
     # get_guess_string
@@ -265,12 +265,13 @@ class WordleGame:
         
 
 
-        
+                                            
 
         g.turns_remaining -= 1
-        self.total_guesses +=1
         #as long as there are turns remaining
-        if (g.turns_remaining >= 1):
+        self.total_guesses +=1
+
+        if (self.total_guesses < 5):
             #correct word letter state and state assigner
             if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
@@ -279,13 +280,16 @@ class WordleGame:
                 return g
 
 
+
             #incorrect word and corresponding letter state assigner
             c = 0
             for x in self.guess:
                 b = 0
+                letter_in_word = False
                 for y in self.test_word:
                     #x and y are the individual characters of guess and testword which should have the same length
-                    if x == y and c < b:
+                    if x == y and c != b:
+                        letter_in_word = True
                         #c and b are counters, and b should be greater than c in this case
                         #this is like an index checker without relying on the actual index bs that arrives with it
                         #the > is there because you dont want to reassign for letters that got the letterstate already
@@ -294,18 +298,19 @@ class WordleGame:
                         break
                         #exit this for first loop which would check for the next letter
                     elif x == y and c == b:
+                        letter_in_word = True
                         #same letter, at the correct position
                         g.letter_state.append(LetterState.MATCH_PLACE)
                         b+=1
                         break
-                    else:
-                        g.letter_state.append(LetterState.NOT_FOUND)
-                        b+=1
-                        break
+                    b+=1
+                if (letter_in_word == False):
+                    g.letter_state.append(LetterState.NOT_FOUND)
                 c +=1
             g.state = GuessState.GUESS_AGAIN
          #in the case of no more turns remaining
-        elif (g.turns_remaining == 0):
+        
+        if (self.total_guesses == 5):
             if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
                 for x in range(len(self.guess)):
@@ -314,25 +319,35 @@ class WordleGame:
             else:
                 g.state = GuessState.YOU_LOST
                 c = 0
+                
                 for x in self.guess:
                     b = 0
+                    letter_in_word = False
                     for y in self.test_word:
-                        if x == y and c < b:
+                        #x and y are the individual characters of guess and testword which should have the same length
+                        if x == y and c != b:
+                            letter_in_word = True
+                            #c and b are counters, and b should be greater than c in this case
+                            #this is like an index checker without relying on the actual index bs that arrives with it
+                            #the > is there because you dont want to reassign for letters that got the letterstate already
                             g.letter_state.append(LetterState.MATCH_LETTER) 
                             b+=1   
                             break
+                            #exit this for first loop which would check for the next letter
                         elif x == y and c == b:
+                            letter_in_word = True
+                            #same letter, at the correct position
                             g.letter_state.append(LetterState.MATCH_PLACE)
                             b+=1
                             break
-                        else:
-                            g.letter_state.append(LetterState.NOT_FOUND)
-                            b+=1
-                            break
+                    if (letter_in_word == False):
+                        g.letter_state.append(LetterState.NOT_FOUND)
                     c +=1
-                    #i could've shortened the code by making the letter state scanner a helper function
-                    #this has to be called when you lose (to determing the letter state) as well as during the 
-                    #normal guesses so i just copied and pasted for my ease
+                        #i could've shortened the code by making the letter state scanner a helper function
+                        #this has to be called when you lose (to determing the letter state) as well as during the 
+                        #normal guesses so i just copied and pasted for my ease
                     return g
+
         return g
+
         
