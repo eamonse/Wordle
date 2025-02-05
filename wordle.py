@@ -211,6 +211,7 @@ class WordleGame:
         self.test_word = ""
         self.current_word =""
         self.guess = ""
+        self.has_won = False
     # has_more_guesses
     # *****************
     # Checks to see if you can continue to guess words
@@ -221,7 +222,7 @@ class WordleGame:
     """ <method for has_more_guesses> """
     def has_more_guesses(self) -> bool:
         #total guesses is going to be changing per submitted guess
-        return self.total_guesses == MAX_GUESSES
+        return self.total_guesses < MAX_GUESSES
     # start_new_game
     # *****************
     # Starts a new game of Wordle using words of the given length
@@ -276,6 +277,7 @@ class WordleGame:
             #correct word letter state and state assigner
             if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
+                self.has_won = True
                 for x in range(len(self.guess)):
                     g.letter_state.append(LetterState.MATCH_PLACE)
                 return g
@@ -322,6 +324,7 @@ class WordleGame:
         if (self.total_guesses == MAX_GUESSES):
             if (self.guess == self.test_word):
                 g.state = GuessState.YOU_WON
+                self.has_won = True
                 for x in range(len(self.guess)):
                     g.letter_state.append(LetterState.MATCH_PLACE)
                 return g
